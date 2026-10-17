@@ -93,6 +93,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     BSP/LCD/lcd.c
     BSP/LVGL/lv_port_disp.c
+    App/Src/app.c
+    App/Src/ui.c
 )
 
 # Add include paths
@@ -100,6 +102,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     BSP/LCD
     BSP/LVGL
+    App/Inc
 )
 
 # Add project symbols (macros)

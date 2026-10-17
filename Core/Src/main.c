@@ -23,10 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "lcd.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "lcd.h"
-#include "lvgl.h"
+#include "app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,67 +59,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void led_red_task(void *pvParameters)
-{
-    (void)pvParameters;   /* 避免 unused parameter 警告 */
-
-    for (;;) {
-        HAL_GPIO_TogglePin(d2_red_GPIO_Port, d2_red_Pin);   /* 换成你的引脚 */
-        vTaskDelay(pdMS_TO_TICKS(500));          /* 阻塞 500ms，让出 CPU */
-    }
-}
-
-static void led_green_task(void *pvParameters)
-{
-    (void)pvParameters;   /* 避免 unused parameter 警告 */
-
-    for (;;) {
-        HAL_GPIO_TogglePin(d2_green_GPIO_Port, d2_green_Pin);   /* 换成你的引脚 */
-        vTaskDelay(pdMS_TO_TICKS(200));          /* 阻塞 200ms，让出 CPU */
-    }
-}
 
 
-#include "lv_port_disp.h"
-static void gui_task(void *pvParameters)
-{
-    (void)pvParameters;
 
-    /* 1. 初始化屏幕（你的 ST7789 驱动） */
-    LCD_Init(); 
-    LCD_Fill(50, 50, 120, 100, GREEN); 
-    /* 2. 初始化 LVGL 核心库 */
-    lv_init();
-
-    /* 3. 初始化 LVGL 显示驱动（刚才写的移植层） */
-    lv_port_disp_init();
-
-    /* 4. 把默认屏幕背景改成黑色 */
-    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
-
-    /* 5. 创建一个标签（Label） */
-    lv_obj_t * label = lv_label_create(lv_scr_act());
-    lv_label_set_text(label, "Hello LVGL!\nF407 + FreeRTOS\nST7789 SPI");
-    
-    /* 6. 设置文字颜色为绿色，字体稍大一点 */
-    lv_obj_set_style_text_color(label, lv_color_hex(0x00FF00), 0);
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
-    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0); // 文字居中对齐
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0); // 整个标签在屏幕居中
-
-    for ( ; ; ) {
-        /* 7. 喂狗：LVGL 需要不断调用这个来处理任务、画图 */
-        lv_timer_handler();
-        /* 给 5ms 延时让出 CPU，不要死等 */
-        vTaskDelay(pdMS_TO_TICKS(5));
-    }
-}
-
-/* 这个函数由 FreeRTOS 自动调用，每 1ms 触发一次 */
-void vApplicationTickHook(void)
-{
-    lv_tick_inc(1); 
-}
 /* USER CODE END 0 */
 
 /**
@@ -166,10 +108,7 @@ int main(void)
   //             NULL,                 /* 传给任务的参数 */
   //             2,                    /* 优先级：2（数值越大优先级越高） */
   //             &led_task_handle);    /* 保存句柄 */
-
-  xTaskCreate(led_red_task,   "LED_R",  32, NULL, 2, NULL);
-  xTaskCreate(led_green_task, "LED_G",  32, NULL, 2, NULL);
-  xTaskCreate(gui_task,       "GUI",    2048, NULL, 3, NULL); // 给 GUI 2KB 栈
+  App_Init();
   /* 启动调度器。这一句之后，CPU 交给 FreeRTOS 控制 */
   vTaskStartScheduler();
 
