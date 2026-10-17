@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "FreeRTOS.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,6 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static TaskHandle_t led_task_handle = NULL;
 
 /* USER CODE END PV */
 
@@ -54,7 +56,25 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void led_red_task(void *pvParameters)
+{
+    (void)pvParameters;   /* 避免 unused parameter 警告 */
 
+    for (;;) {
+        HAL_GPIO_TogglePin(d2_red_GPIO_Port, d2_red_Pin);   /* 换成你的引脚 */
+        vTaskDelay(pdMS_TO_TICKS(500));          /* 阻塞 500ms，让出 CPU */
+    }
+}
+
+static void led_green_task(void *pvParameters)
+{
+    (void)pvParameters;   /* 避免 unused parameter 警告 */
+
+    for (;;) {
+        HAL_GPIO_TogglePin(d2_green_GPIO_Port, d2_green_Pin);   /* 换成你的引脚 */
+        vTaskDelay(pdMS_TO_TICKS(200));          /* 阻塞 200ms，让出 CPU */
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -92,8 +112,28 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  /* 创建 LED 任务 */
+  // xTaskCreate(led_task,             /* 任务函数 */
+  //             "LED",                /* 任务名（调试器里能看到） */
+  //             128,                  /* 栈大小：128 words = 512 bytes */
+  //             NULL,                 /* 传给任务的参数 */
+  //             2,                    /* 优先级：2（数值越大优先级越高） */
+  //             &led_task_handle);    /* 保存句柄 */
+
+  xTaskCreate(led_red_task,   "LED_R",  128, NULL, 2, NULL);
+  xTaskCreate(led_green_task, "LED_G",  128, NULL, 2, NULL);
+
+  /* 启动调度器。这一句之后，CPU 交给 FreeRTOS 控制 */
+  vTaskStartScheduler();
+
+  /* 只有调度器启动失败（堆空间不够），才会执行到这里 */
+  for (;;);
+
   while (1)
   {
+    HAL_GPIO_TogglePin(d2_red_GPIO_Port, d2_red_Pin);
+    HAL_Delay(500);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
