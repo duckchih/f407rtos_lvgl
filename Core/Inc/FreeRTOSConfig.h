@@ -11,7 +11,7 @@
 #define configUSE_16_BIT_TICKS                  0
 #define configMAX_PRIORITIES                    7
 #define configMINIMAL_STACK_SIZE                128           /* 单位：word，128*4=512B */
-#define configTOTAL_HEAP_SIZE                   (32 * 1024)   /* 32KB */
+#define configTOTAL_HEAP_SIZE                   (40 * 1024)   /* 32KB */
 #define configMAX_TASK_NAME_LEN                 16
 
 /* ============ 中断优先级（关键） ============ */
@@ -27,7 +27,7 @@
 /* ============ 可选功能开关 ============ */
 #define configUSE_TICKLESS_IDLE                 0
 #define configUSE_IDLE_HOOK                     0
-#define configUSE_TICK_HOOK                     0    /* 现在不用，LVGL 阶段再打开 */
+#define configUSE_TICK_HOOK                     1    /*设置为1给lvgl心跳 */
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
 #define configSUPPORT_STATIC_ALLOCATION         0
 #define configUSE_MUTEXES                       1

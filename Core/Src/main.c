@@ -26,6 +26,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "lcd.h"
+#include "lvgl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static TaskHandle_t led_task_handle = NULL;
+// static TaskHandle_t led_task_handle = NULL;
 
 /* USER CODE END PV */
 
@@ -78,19 +79,46 @@ static void led_green_task(void *pvParameters)
     }
 }
 
+
+#include "lv_port_disp.h"
 static void gui_task(void *pvParameters)
 {
     (void)pvParameters;
 
-    /* 初始化屏幕 */
+    /* 1. 初始化屏幕（你的 ST7789 驱动） */
     LCD_Init(); 
+    LCD_Fill(50, 50, 120, 100, GREEN); 
+    /* 2. 初始化 LVGL 核心库 */
+    lv_init();
 
-    /* 刷成红色测试 */
-    LCD_Fill(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, RED);
+    /* 3. 初始化 LVGL 显示驱动（刚才写的移植层） */
+    lv_port_disp_init();
 
-    for (;;) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+    /* 4. 把默认屏幕背景改成黑色 */
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
+
+    /* 5. 创建一个标签（Label） */
+    lv_obj_t * label = lv_label_create(lv_scr_act());
+    lv_label_set_text(label, "Hello LVGL!\nF407 + FreeRTOS\nST7789 SPI");
+    
+    /* 6. 设置文字颜色为绿色，字体稍大一点 */
+    lv_obj_set_style_text_color(label, lv_color_hex(0x00FF00), 0);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0); // 文字居中对齐
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0); // 整个标签在屏幕居中
+
+    for ( ; ; ) {
+        /* 7. 喂狗：LVGL 需要不断调用这个来处理任务、画图 */
+        lv_timer_handler();
+        /* 给 5ms 延时让出 CPU，不要死等 */
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
+}
+
+/* 这个函数由 FreeRTOS 自动调用，每 1ms 触发一次 */
+void vApplicationTickHook(void)
+{
+    lv_tick_inc(1); 
 }
 /* USER CODE END 0 */
 
@@ -141,7 +169,7 @@ int main(void)
 
   xTaskCreate(led_red_task,   "LED_R",  32, NULL, 2, NULL);
   xTaskCreate(led_green_task, "LED_G",  32, NULL, 2, NULL);
-  xTaskCreate(gui_task,       "GUI",    512, NULL, 3, NULL); // 给 GUI 2KB 栈
+  xTaskCreate(gui_task,       "GUI",    2048, NULL, 3, NULL); // 给 GUI 2KB 栈
   /* 启动调度器。这一句之后，CPU 交给 FreeRTOS 控制 */
   vTaskStartScheduler();
 

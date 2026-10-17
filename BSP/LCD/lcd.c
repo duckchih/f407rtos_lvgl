@@ -79,7 +79,7 @@ void LCD_Init(void)
     vTaskDelay(pdMS_TO_TICKS(120));
 
     LCD_WriteCommand(0x36); // Memory Data Access Control
-    LCD_WriteData8(0x00);   // 0x00 是竖屏，如果是横屏可以改 0x60
+    LCD_WriteData8(0xC0);   // 0x00 是竖屏，如果是横屏可以改 0x60
 
     LCD_WriteCommand(0x3A); // Interface Pixel Format
     LCD_WriteData8(0x55);   // 16 bits/pixel (RGB565)

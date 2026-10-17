@@ -28,4 +28,6 @@ void LCD_Init(void);
 void LCD_Fill(uint16_t xsta, uint16_t ysta, uint16_t xend, uint16_t yend, uint16_t color);
 void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color);
 
+void LCD_SetWindow(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2); 
+
 #endif

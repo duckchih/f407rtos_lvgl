@@ -64,6 +64,25 @@ target_include_directories(freertos_kernel PUBLIC
 # FreeRTOS 依赖 HAL 提供的 CMSIS 头文件
 target_link_libraries(freertos_kernel PUBLIC stm32cubemx)
 
+
+# ============================================================
+# LVGL 图形库
+# ============================================================
+set(LVGL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/LVGL)
+
+# 递归收集 LVGL src 下的所有 .c 文件
+file(GLOB_RECURSE LVGL_SOURCES ${LVGL_DIR}/src/*.c)
+
+add_library(lvgl STATIC ${LVGL_SOURCES})
+
+target_include_directories(lvgl PUBLIC
+    ${LVGL_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc
+)
+
+target_link_libraries(lvgl PUBLIC stm32cubemx freertos_kernel)
+
+
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
@@ -73,12 +92,14 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     BSP/LCD/lcd.c
+    BSP/LVGL/lv_port_disp.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     BSP/LCD
+    BSP/LVGL
 )
 
 # Add project symbols (macros)
@@ -95,4 +116,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
     freertos_kernel      # <-- 加这一行
+    lvgl
 )
