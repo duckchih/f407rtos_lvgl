@@ -40,7 +40,7 @@ add_subdirectory(cmake/stm32cubemx)
 # ============================================================
 # FreeRTOS 内核（编译成独立静态库）
 # ============================================================
-set(FREERTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/FreeRTOS)
+set(FREERTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/FreeRTOS)
 
 add_library(freertos_kernel STATIC
     ${FREERTOS_DIR}/Source/tasks.c
@@ -60,6 +60,7 @@ target_include_directories(freertos_kernel PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc
 )
 
+
 # FreeRTOS 依赖 HAL 提供的 CMSIS 头文件
 target_link_libraries(freertos_kernel PUBLIC stm32cubemx)
 
@@ -71,11 +72,13 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    BSP/LCD/lcd.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    BSP/LCD
 )
 
 # Add project symbols (macros)

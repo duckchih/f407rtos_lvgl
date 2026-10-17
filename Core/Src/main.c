@@ -18,12 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "spi.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "FreeRTOS.h"
 #include "task.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,6 +77,21 @@ static void led_green_task(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(200));          /* 阻塞 200ms，让出 CPU */
     }
 }
+
+static void gui_task(void *pvParameters)
+{
+    (void)pvParameters;
+
+    /* 初始化屏幕 */
+    LCD_Init(); 
+
+    /* 刷成红色测试 */
+    LCD_Fill(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, RED);
+
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -106,8 +123,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
+  // LCD_Init();
+  // LCD_Fill(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, RED); // 刷成红色
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -120,9 +139,9 @@ int main(void)
   //             2,                    /* 优先级：2（数值越大优先级越高） */
   //             &led_task_handle);    /* 保存句柄 */
 
-  xTaskCreate(led_red_task,   "LED_R",  128, NULL, 2, NULL);
-  xTaskCreate(led_green_task, "LED_G",  128, NULL, 2, NULL);
-
+  xTaskCreate(led_red_task,   "LED_R",  32, NULL, 2, NULL);
+  xTaskCreate(led_green_task, "LED_G",  32, NULL, 2, NULL);
+  xTaskCreate(gui_task,       "GUI",    512, NULL, 3, NULL); // 给 GUI 2KB 栈
   /* 启动调度器。这一句之后，CPU 交给 FreeRTOS 控制 */
   vTaskStartScheduler();
 
