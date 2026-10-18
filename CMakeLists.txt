@@ -93,6 +93,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     BSP/LCD/lcd.c
     BSP/LVGL/lv_port_disp.c
+    BSP/UART/bsp_uart.c
     App/Src/app.c
     App/Src/ui.c
 )
@@ -102,6 +103,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     BSP/LCD
     BSP/LVGL
+    BSP/UART
     App/Inc
 )
 

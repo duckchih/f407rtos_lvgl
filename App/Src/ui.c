@@ -1,8 +1,9 @@
 #include "ui.h"
 #include "lv_port_disp.h"
-
-static lv_obj_t * status_label = NULL;
-
+#include "stdio.h"
+// static lv_obj_t * status_label = NULL;
+static lv_obj_t * led_label = NULL;
+static lv_obj_t * uart_label = NULL;
 void UI_Init(void)
 {
     lv_init();
@@ -11,18 +12,37 @@ void UI_Init(void)
     // 黑底
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
 
-    // 创建标签
-    status_label = lv_label_create(lv_scr_act());
-    lv_label_set_text(status_label, "System Boot...");
-    lv_obj_set_style_text_color(status_label, lv_color_hex(0x00FF00), 0);
-    lv_obj_set_style_text_font(status_label, &lv_font_montserrat_18, 0); // 假设你用的是18号
-    lv_obj_align(status_label, LV_ALIGN_CENTER, 0, 0);
+    // 1. 创建 LED 计数标签（放上面）
+    led_label = lv_label_create(lv_scr_act());
+    lv_label_set_text(led_label, "LED Count:\n0");
+    lv_obj_set_style_text_color(led_label, lv_color_hex(0x00FF00), 0); // 绿色
+    lv_obj_set_style_text_font(led_label, &lv_font_montserrat_18, 0);
+    lv_obj_align(led_label, LV_ALIGN_TOP_MID, 0, 40);
+
+    // 2. 创建 UART 接收标签（放下面）
+    uart_label = lv_label_create(lv_scr_act());
+    lv_label_set_text(uart_label, "UART Wait...");
+    lv_obj_set_style_text_color(uart_label, lv_color_hex(0xFFFFFF), 0); // 白色
+    lv_obj_set_style_text_font(uart_label, &lv_font_montserrat_18, 0);
+    lv_obj_align(uart_label, LV_ALIGN_BOTTOM_MID, 0, -40);
 }
 
-/* 留给 App 层调用的接口：修改屏幕上的字 */
-void UI_UpdateText(const char *text)
+// 只更新 LED 标签
+void UI_UpdateLedCount(uint32_t count)
 {
-    if (status_label != NULL) {
-        lv_label_set_text(status_label, text);
+    if (led_label != NULL) {
+        char str[32];
+        snprintf(str, sizeof(str), "LED Count:\n%lu", count);
+        lv_label_set_text(led_label, str);
     }
 }
+// 只更新串口标签
+void UI_UpdateUartText(const char *text)
+{
+    if (uart_label != NULL) {
+        lv_label_set_text(uart_label, text);
+    }
+}
+
+
+

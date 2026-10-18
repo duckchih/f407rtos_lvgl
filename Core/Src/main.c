@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -27,6 +29,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "app.h"
+#include "bsp_uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,8 +96,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
   // LCD_Init();
   // LCD_Fill(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, RED); // 刷成红色
   /* USER CODE END 2 */
