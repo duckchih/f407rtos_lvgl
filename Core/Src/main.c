@@ -101,13 +101,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  /* 创建 LED 任务 */
-  // xTaskCreate(led_task,             /* 任务函数 */
-  //             "LED",                /* 任务名（调试器里能看到） */
-  //             128,                  /* 栈大小：128 words = 512 bytes */
-  //             NULL,                 /* 传给任务的参数 */
-  //             2,                    /* 优先级：2（数值越大优先级越高） */
-  //             &led_task_handle);    /* 保存句柄 */
+
   App_Init();
   /* 启动调度器。这一句之后，CPU 交给 FreeRTOS 控制 */
   vTaskStartScheduler();
