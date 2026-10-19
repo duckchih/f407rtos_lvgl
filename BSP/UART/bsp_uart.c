@@ -81,7 +81,7 @@ uint16_t BSP_UART_GetReceivedData(uint8_t **data_ptr)
     return last_rx_size;
 }
 
-// DMA接收+串口空闲中断代码完成后，新增：DMA 发送完成回调（由硬件中断自动调用）
+// 新增：DMA 发送完成回调（由硬件中断自动调用）（DMA接收+串口空闲中断代码完成后新加入）
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART1) 

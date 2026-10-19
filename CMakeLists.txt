@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.22)
-
 #
 # This file is generated only once,
 # and is not re-generated if converter is called multiple times.
@@ -27,7 +26,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 # Core project settings
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
-
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
@@ -94,6 +92,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     BSP/LCD/lcd.c
     BSP/LVGL/lv_port_disp.c
     BSP/UART/bsp_uart.c
+    BSP/Flash/bsp_flash.c
     App/Src/app.c
     App/Src/ui.c
 )
@@ -104,6 +103,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     BSP/LCD
     BSP/LVGL
     BSP/UART
+    BSP/Flash
     App/Inc
 )
 

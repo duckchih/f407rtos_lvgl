@@ -33,7 +33,7 @@
 #define configUSE_MUTEXES                       1
 #define configUSE_RECURSIVE_MUTEXES             0
 #define configUSE_COUNTING_SEMAPHORES           1
-#define configUSE_TIMERS                        0    /* 先不开软件定时器 */
+#define configUSE_TIMERS                        0    /* 软件定时器 */
 
 /* ============ INCLUDE_xxx 开关 ============ */
 #define INCLUDE_vTaskDelay                      1
@@ -41,6 +41,8 @@
 #define INCLUDE_xTaskGetSchedulerState          1
 #define INCLUDE_vTaskSuspend                    1
 #define INCLUDE_xTaskGetCurrentTaskHandle       1
+#define INCLUDE_uxTaskGetStackHighWaterMark     1
+#define INCLUDE_uxTaskPriorityGet               1
 
 /* ============ 断言：出错就停 ============ */
 #define configASSERT(x)  if ((x) == 0) { taskDISABLE_INTERRUPTS(); for(;;); }
@@ -50,5 +52,16 @@
 #define vPortSVCHandler         SVC_Handler
 #define xPortPendSVHandler      PendSV_Handler
 /* xPortSysTickHandler 不在这里定义，因为我们手动在 stm32f4xx_it.c 里调用 */
+
+
+/* 开启运行时统计和跟踪功能 */
+#define configGENERATE_RUN_TIME_STATS            1
+#define configUSE_TRACE_FACILITY                 1
+#define configUSE_STATS_FORMATTING_FUNCTIONS     1
+
+/* 告诉 FreeRTOS，时间基准从哪里取 */
+extern volatile uint32_t ulHighFrequencyTimerTicks;
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() 
+#define portGET_RUN_TIME_COUNTER_VALUE()         ulHighFrequencyTimerTicks
 
 #endif /* FREERTOS_CONFIG_H */
